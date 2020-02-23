@@ -39,14 +39,14 @@ func New(s string) *RabbitMQ {
 
 	mq := new(RabbitMQ)
 	mq.channel = ch
-	mq.Name = s
+	mq.Name = q.Name
 
 	return mq
 }
 
 // Bind to exchange
 func (mq *RabbitMQ) Bind(exchange string) {
-	e := mq.Channel.QueueBind(
+	e := mq.channel.QueueBind(
 		mq.Name,  // queue name
 		"",       // routing key
 		exchange, // exchange
@@ -56,7 +56,7 @@ func (mq *RabbitMQ) Bind(exchange string) {
 	if e != nil {
 		panic(e)
 	}
-	q.exchange = exchange
+	mq.exchange = exchange
 }
 
 // Send msg
@@ -66,15 +66,15 @@ func (mq *RabbitMQ) Send(queue string, body interface{}) {
 		panic(e)
 	}
 
-	e = q.channel.Publish(
-		"", // queue name
+	e = mq.channel.Publish(
+		"",    // queue name
 		queue, //
-		false,   //
+		false, //
 		false, //
 		amqp.Publishing{
 			ReplyTo: mq.Name,
-			Body: []byte(str),
-		}
+			Body:    []byte(str),
+		},
 	)
 	if e != nil {
 		panic(e)
@@ -83,19 +83,19 @@ func (mq *RabbitMQ) Send(queue string, body interface{}) {
 
 // Publish msg
 func (mq *RabbitMQ) Publish(exchange string, body interface{}) {
-	str,e:=json.Marshal(body)
-	if e!= nil {
+	str, e := json.Marshal(body)
+	if e != nil {
 		panic(e)
 	}
-	e=q.channel.Publish(
+	e = mq.channel.Publish(
 		exchange, // exchange
 		"",       //
-		false, //
-		false, //
+		false,    //
+		false,    //
 		amqp.Publishing{
 			ReplyTo: mq.Name,
-			Body: []byte(str),
-		}
+			Body:    []byte(str),
+		},
 	)
 	if e != nil {
 		panic(e)
@@ -104,16 +104,16 @@ func (mq *RabbitMQ) Publish(exchange string, body interface{}) {
 
 // Consume msg
 func (mq *RabbitMQ) Consume() <-chan amqp.Delivery {
-	c, e :=q.channel.Consume(
+	c, e := mq.channel.Consume(
 		mq.Name, //
-		"", //
-		true, //
-		false, //
-		false, //
-		false, //
-		nil, //
+		"",      //
+		true,    //
+		false,   //
+		false,   //
+		false,   //
+		nil,     //
 	)
-	if e!= nil {
+	if e != nil {
 		panic(e)
 	}
 	return c
@@ -121,5 +121,5 @@ func (mq *RabbitMQ) Consume() <-chan amqp.Delivery {
 
 // Close connection
 func (mq *RabbitMQ) Close() {
-	q.channel.Close()
+	mq.channel.Close()
 }

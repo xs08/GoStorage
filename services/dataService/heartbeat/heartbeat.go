@@ -9,7 +9,11 @@ import (
 
 // StartHeartbeat start heartbeat
 func StartHeartbeat() {
-	q := rabbitmq.New(os.Getenv("RABBITMQ_SERVER"))
+	amqpLink := "amqp://admin:admin@" +
+		os.Getenv("RABBITMQ_PORT_5672_TCP_ADDR") +
+		":" + os.Getenv("RABBITMQ_PORT_5672_TCP_PORT")
+
+	q := rabbitmq.New(amqpLink)
 	defer q.Close()
 
 	for {

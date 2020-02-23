@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"os"
 
-	"tonyxiong.top/gostorage//services/dataService/objects"
 	"tonyxiong.top/gostorage/services/dataService/heartbeat"
 	"tonyxiong.top/gostorage/services/dataService/locate"
+	"tonyxiong.top/gostorage/services/dataService/objects"
 )
 
 func main() {

@@ -15,10 +15,16 @@ func Locate(name string) bool {
 
 // StartLocate start location service
 func StartLocate() {
-	q := rabbitmq.New(os.Getenv("RABBITMQ_SERVER"))
+	amqpLink := "amqp://admin:admin@" +
+		os.Getenv("RABBITMQ_PORT_5672_TCP_ADDR") +
+		":" + os.Getenv("RABBITMQ_PORT_5672_TCP_PORT")
+
+	q := rabbitmq.New(amqpLink)
 	defer q.Close()
+
 	q.Bind("dataServers")
 	c := q.Consume()
+
 	for msg := range c {
 		object, e := strconv.Unquote(string(msg.Body))
 		if e != nil {
