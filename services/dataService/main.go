@@ -18,7 +18,8 @@ func main() {
 
 	// add log middleware
 	logMiddlewares := logs.GetHTTPLoggerMiddleware(os.Stdout, map[string]string{
-		"appName": "dataService",
+		"appName":    "dataService",
+		"appAddress": os.Getenv("LISTEN_ADDRESS"),
 	})
 
 	http.Handle("/objects/", logMiddlewares.Then(http.HandlerFunc(objects.Handler)))

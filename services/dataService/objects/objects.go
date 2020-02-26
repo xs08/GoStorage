@@ -36,14 +36,14 @@ func put(w http.ResponseWriter, r *http.Request) {
 
 	if e != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		log.Err(e).Msg("create object file error")
+		log.Err(e).Msg("create file file error")
 		return
 	}
 	defer f.Close()
 
 	io.Copy(f, r.Body)
 	w.WriteHeader(http.StatusOK)
-	log.Msg("put object ok")
+	log.Msg("put file ok")
 }
 
 func get(w http.ResponseWriter, r *http.Request) {
@@ -54,15 +54,27 @@ func get(w http.ResponseWriter, r *http.Request) {
 		Str("fileName", fileName).
 		Str("filePath", filePath)
 
-	f, e := os.Open(filePath)
+	// file exists
+	_, e := os.Stat(filePath)
+	if e != nil {
+		if os.IsNotExist(e) {
+			w.WriteHeader(http.StatusNotFound)
+			log.Msg("get file fail: not found")
+			return
+		}
+		w.WriteHeader(http.StatusInternalServerError)
+		log.Err(e).Msg("get file error")
+		return
+	}
 
+	f, e := os.Open(filePath)
 	if e != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		log.Err(e).Msg("get object error")
+		log.Err(e).Msg("open file error")
 		return
 	}
 	defer f.Close()
 
 	io.Copy(w, f)
-	log.Msg("get object ok")
+	log.Msg("get file ok")
 }
