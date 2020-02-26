@@ -18,28 +18,38 @@ func ListenHeartbeat() {
 	amqpLink := "amqp://admin:admin@" +
 		os.Getenv("RABBITMQ_PORT_5672_TCP_ADDR") +
 		":" + os.Getenv("RABBITMQ_PORT_5672_TCP_PORT")
-
-	logger.Debug().
+	exchnage := "apiServers"
+	// logger
+	log := logger.Info().
 		Str("amqpLink", amqpLink).
-		Msg("combine amqpLink from env")
+		Str("exchnage", exchnage)
 
 	q := rabbitmq.New(amqpLink)
 	defer q.Close()
 
-	q.Bind("apiServers")
+	q.Bind(exchnage)
 	c := q.Consume()
+	log.Msg("start consume msg from mq")
 	// start remove data
 	go removeExpiredDataServer()
 
+	// consume msg logger
+	log = logger.Trace().
+		Str("amqpLink", amqpLink).
+		Str("exchnage", exchnage)
 	for msg := range c {
-		dataServer, e := strconv.Unquote(string(msg.Body))
+		msg := string(msg.Body)
+		log = log.Str("rawMsg", msg)
+
+		dataServer, e := strconv.Unquote(msg)
+		log = log.Str("dataServer", dataServer)
 
 		if e != nil {
+			log.Err(e).Msg("unquote msg error")
 			panic(e)
 		}
-		logger.Debug().
-			Str("dataServer", dataServer).
-			Msg("consume data from mq")
+
+		log.Msg("consume data from mq")
 
 		mutex.Lock()
 		dataServers[dataServer] = time.Now()
@@ -71,9 +81,7 @@ func GetDataServers() []string {
 	for s := range dataServers {
 		ds = append(ds, s)
 	}
-
-	logger.Debug().
-		Msg("GetDataServers with ds")
+	logger.Debug().Strs("dataServers", ds).Msg("get data servers with ds")
 
 	return ds
 }

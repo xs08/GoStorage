@@ -1,4 +1,4 @@
-package heartbeat
+package locate
 
 import (
 	"os"
@@ -6,13 +6,13 @@ import (
 	"tonyxiong.top/gostorage/pkg/logs"
 )
 
-// initial logger
+// inner package logger
 var logger *logs.Logger
 
 func init() {
 	// initial logger
 	logger = logs.NewLogger(os.Stdout, map[string]string{
-		"appName": "dataService",
-		"package": "heartbeat",
+		"appName": "apiService",
+		"package": "locate",
 	})
 }
