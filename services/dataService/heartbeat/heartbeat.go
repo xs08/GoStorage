@@ -24,7 +24,7 @@ func StartHeartbeat() {
 			"apiServers",                // exchange
 			os.Getenv("LISTEN_ADDRESS"), // body
 		)
-		logger.Debug().Str("publishData", os.Getenv("LISTEN_ADDRESS")).Msg("send heart beat")
+		logger.Trace().Str("publishData", os.Getenv("LISTEN_ADDRESS")).Msg("send heart beat")
 		time.Sleep(5 * time.Second)
 	}
 }

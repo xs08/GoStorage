@@ -1,4 +1,4 @@
-package heartbeat
+package locate
 
 import (
 	"os"
@@ -13,6 +13,6 @@ func init() {
 	// initial logger
 	logger = logs.NewLogger(os.Stdout, map[string]string{
 		"appName": "dataService",
-		"package": "heartbeat",
+		"package": "locate",
 	})
 }
