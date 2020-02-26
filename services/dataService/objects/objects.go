@@ -2,7 +2,6 @@ package objects
 
 import (
 	"io"
-	"log"
 	"net/http"
 	"os"
 	"strings"
@@ -22,33 +21,48 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusMethodNotAllowed)
+	logger.Info().Msg("request method not allowed")
 }
 
 func put(w http.ResponseWriter, r *http.Request) {
-	filePath := os.Getenv("STORAGE_ROOT") + "/objects/" +
-		strings.Split(r.URL.EscapedPath(), "/")[2]
+	fileName := strings.Split(r.URL.EscapedPath(), "/")[2]
+	filePath := os.Getenv("STORAGE_ROOT") + "/objects/" + fileName
+	// logger
+	log := logger.Info().
+		Str("fileName", fileName).
+		Str("filePath", filePath)
+
 	f, e := os.Create(filePath)
 
 	if e != nil {
-		log.Println(e)
 		w.WriteHeader(http.StatusInternalServerError)
+		log.Err(e).Msg("create object file error")
 		return
 	}
 	defer f.Close()
+
 	io.Copy(f, r.Body)
 	w.WriteHeader(http.StatusOK)
+	log.Msg("put object ok")
 }
 
 func get(w http.ResponseWriter, r *http.Request) {
-	f, e := os.Open(os.Getenv("STORAGE_ROOT") + "/objects/" +
-		strings.Split(r.URL.EscapedPath(), "/")[2])
+	fileName := strings.Split(r.URL.EscapedPath(), "/")[2]
+	filePath := os.Getenv("STORAGE_ROOT") + "/objects/" + fileName
+	// logger
+	log := logger.Info().
+		Str("fileName", fileName).
+		Str("filePath", filePath)
+
+	f, e := os.Open(filePath)
 
 	if e != nil {
-		log.Println(e)
 		w.WriteHeader(http.StatusInternalServerError)
+		log.Err(e).Msg("get object error")
 		return
 	}
 	defer f.Close()
 
 	io.Copy(w, f)
+	log.Msg("get object ok")
 }

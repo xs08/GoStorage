@@ -6,6 +6,8 @@ import (
 	"strconv"
 	"sync"
 	"time"
+
+	"tonyxiong.top/gostorage/pkg/rabbitmq"
 )
 
 var dataServers = make(map[string]time.Time)
@@ -13,7 +15,15 @@ var mutex sync.Mutex
 
 // ListenHeartbeat listen heartbeat store api
 func ListenHeartbeat() {
-	q := rabbitmq.New(os.Getenv("RABBITMQ_SERVER"))
+	amqpLink := "amqp://admin:admin@" +
+		os.Getenv("RABBITMQ_PORT_5672_TCP_ADDR") +
+		":" + os.Getenv("RABBITMQ_PORT_5672_TCP_PORT")
+
+	logger.Debug().
+		Str("amqpLink", amqpLink).
+		Msg("combine amqpLink from env")
+
+	q := rabbitmq.New(amqpLink)
 	defer q.Close()
 
 	q.Bind("apiServers")
@@ -23,9 +33,14 @@ func ListenHeartbeat() {
 
 	for msg := range c {
 		dataServer, e := strconv.Unquote(string(msg.Body))
+
 		if e != nil {
 			panic(e)
 		}
+		logger.Debug().
+			Str("dataServer", dataServer).
+			Msg("consume data from mq")
+
 		mutex.Lock()
 		dataServers[dataServer] = time.Now()
 		mutex.Unlock()
@@ -56,6 +71,9 @@ func GetDataServers() []string {
 	for s := range dataServers {
 		ds = append(ds, s)
 	}
+
+	logger.Debug().
+		Msg("GetDataServers with ds")
 
 	return ds
 }

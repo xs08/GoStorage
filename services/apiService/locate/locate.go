@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 
@@ -28,7 +29,11 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 
 // Locate object data servers
 func Locate(name string) string {
-	q := rabbitmq.New(os.Getenv("RABBITMQ_SERVER"))
+	amqpLink := "amqp://admin:admin@" +
+		os.Getenv("RABBITMQ_PORT_5672_TCP_ADDR") +
+		":" + os.Getenv("RABBITMQ_PORT_5672_TCP_PORT")
+
+	q := rabbitmq.New(amqpLink)
 	q.Publish("dataServers", name)
 	c := q.Consume()
 	go func() {
@@ -37,7 +42,7 @@ func Locate(name string) string {
 	}()
 
 	msg := <-c
-	s, _ := strconv.Unlock(string(msg.Body))
+	s, _ := strconv.Unquote(string(msg.Body))
 	return s
 }
 

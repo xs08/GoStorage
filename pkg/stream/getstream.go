@@ -6,6 +6,7 @@ import (
 	"net/http"
 )
 
+// GetStream get stream
 type GetStream struct {
 	reader io.Reader
 }
@@ -22,6 +23,7 @@ func newGetStream(url string) (*GetStream, error) {
 	return &GetStream{r.Body}, nil
 }
 
+// NewGetStream get new get stream
 func NewGetStream(server, object string) (*GetStream, error) {
 	if server == "" || object == "" {
 		return nil, fmt.Errorf("invalid server %s object %s", server, object)
