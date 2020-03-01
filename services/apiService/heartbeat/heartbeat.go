@@ -46,7 +46,7 @@ func ListenHeartbeat() {
 
 		if e != nil {
 			log.Err(e).Msg("unquote msg error")
-			panic(e)
+			continue
 		}
 
 		log.Msg("consume data from mq")

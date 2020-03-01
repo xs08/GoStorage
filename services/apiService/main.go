@@ -7,7 +7,7 @@ import (
 
 	"tonyxiong.top/gostorage/services/apiService/heartbeat"
 	"tonyxiong.top/gostorage/services/apiService/locate"
-	"tonyxiong.top/gostorage/services/dataService/objects"
+	"tonyxiong.top/gostorage/services/apiService/objects"
 
 	"tonyxiong.top/gostorage/pkg/logs"
 )

@@ -9,6 +9,15 @@ docker run -d --name dataService1 \
     -e STORAGE_ROOT=/data \
     -it golang bash
 
+docker run -d --name dataService2 \
+    --link rabbitmq:rabbitmq \
+    -p 21235:1235 \
+    -v /home/bigsomg/project/go-storage:/app \
+    -v /home/bigsomg/project/go-storage/tmp/2:/data \
+    -e LISTEN_ADDRESS=:1235 \
+    -e STORAGE_ROOT=/data \
+    -it golang bash
+
 # api service 1
 docker run -d --name apiService1 \
     --link rabbitmq:rabbitmq \

@@ -52,7 +52,8 @@ func Locate(name string) string {
 	c := q.Consume()
 
 	go func() {
-		time.Sleep(time.Second)
+		// overtime for 2 seconds
+		time.Sleep(2 * time.Second)
 		q.Close()
 	}()
 
@@ -60,7 +61,7 @@ func Locate(name string) string {
 	log.Str("rawMsg", msg)
 
 	s, _ := strconv.Unquote(msg)
-	log.Str("unquteMsg", s).Msg("locate object")
+	log.Str("unqoteMsg", s).Msg("locate object")
 
 	return s
 }
