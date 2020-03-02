@@ -1,3 +1,6 @@
+# This file for create rabbitmq on docker. 
+# If you already have rabbitmq, just ignore it
+
 # 1. get image
 docker pull rabbitmq:management
 # 2. start 
@@ -8,16 +11,16 @@ docker run -d --name rabbitmq \
     -e RABBITMQ_DEFAULT_PASS=admin \
     -it rabbitmq:management
 
-# 使用RabbitMQAdmin管理工具创建exchange
-# 1. 远程服务安装开启rabbitmqadmin
-# sudo apt-get install rabbitmq-server
-# 2. 启用管理插件
-# sudo rabbitmq-plugins enable rabbitmq_managment
-# 3. 下载管理插件到本地
-# wget lcoalhost:15672/cli/rabbitmqadmin
-# 4. 使用python3执行命令
-# python3 rabbitmqadmin declare exchange name=exchangeName type=exchangeType
-
-# our service needs following exchange
-rabbitmqadmin declare exchange name=apiServers type=fanout
-rabbitmqadmin declare exchange name=dataServers type=fanout
+# 3. create exchange
+# Two options to create it: 1. use rabbitmqadmin 2. use web interface
+# My choice the easy way. open web browser, open http://127.0.0.1:15672/
+# 1. if need login: enter the username and password, all are the same is amdin
+# 2. click Exchange tab
+# 3. click Add new exchange
+# our service need two exchange: apiServers, dataServers
+# create apiServers exChange
+# enter Name: apiServers
+# choice Type: fanout
+# the other options we can use default
+# 4. click Add exchange. and now, the All Exchanges table will dispaly a exchange named apiServers
+# 5. folloing 3~4 to add dataServers
