@@ -68,7 +68,7 @@ func storeObject(r io.Reader, object string) (int, error) {
 }
 
 func putStream(object string) (*stream.PutStream, error) {
-	server := heartbeat.ChooseRandomServer()
+	server := heartbeat.()
 	if server == "" {
 		return nil, fmt.Errorf("cannot find any dataServer")
 	}
@@ -99,7 +99,7 @@ func get(w http.ResponseWriter, r *http.Request) {
 func getStream(object string) (*stream.GetStream, error) {
 	server := locate.Locate(object)
 	if server == "" {
-		return nil, fmt.Errorf("object %s locate fail")
+		return nil, fmt.Errorf("object %s locate fail", object)
 	}
 
 	return stream.NewGetStream(server, object)
