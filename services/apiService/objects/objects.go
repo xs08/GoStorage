@@ -68,7 +68,7 @@ func storeObject(r io.Reader, object string) (int, error) {
 }
 
 func putStream(object string) (*stream.PutStream, error) {
-	server := heartbeat.()
+	server := heartbeat.ChooseRandomServer()
 	if server == "" {
 		return nil, fmt.Errorf("cannot find any dataServer")
 	}
